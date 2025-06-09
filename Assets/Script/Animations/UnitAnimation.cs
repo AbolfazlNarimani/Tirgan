@@ -8,16 +8,7 @@ namespace Script.Animations
     public class UnitAnimation : MonoBehaviour
     {
         [SerializeField] private Animator _animator;
-
-
-      
-            void Update()
-            {
-                if (Input.GetKeyDown(KeyCode.T))
-                {
-                   _animator.SetTrigger("Shoot");
-                }
-            }
+        
         
 
         public void OnReachArrow()

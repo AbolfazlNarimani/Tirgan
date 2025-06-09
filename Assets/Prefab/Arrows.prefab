@@ -114,49 +114,16 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d5546a5cb631a388dabdaa602f911a82, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1588379088437882661}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d5546a5cb631a388dabdaa602f911a82, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 4405211809790218743}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d5546a5cb631a388dabdaa602f911a82, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3119143198223017008}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: d5546a5cb631a388dabdaa602f911a82, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2715564352599110002}
   m_SourcePrefab: {fileID: 100100000, guid: d5546a5cb631a388dabdaa602f911a82, type: 3}
 --- !u!1 &266615822036995018 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: d5546a5cb631a388dabdaa602f911a82, type: 3}
   m_PrefabInstance: {fileID: 1113053747976517275}
   m_PrefabAsset: {fileID: 0}
---- !u!54 &1588379088437882661
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 266615822036995018}
-  serializedVersion: 4
-  m_Mass: 0.5
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!65 &4405211809790218743
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -191,18 +158,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stickDepth: 0.5
---- !u!114 &2715564352599110002
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 266615822036995018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82fc6bc4bd388d3ff8e73bb0772262d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  homingStrength: 5
-  speed: 20

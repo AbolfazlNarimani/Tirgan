@@ -13,7 +13,7 @@ namespace Script.BowAndArrow
 
         void Start()
         {
-            rb = GetComponent<Rigidbody>();
+         //   rb = GetComponent<Rigidbody>();
             col = GetComponent<Collider>();
         }
 
