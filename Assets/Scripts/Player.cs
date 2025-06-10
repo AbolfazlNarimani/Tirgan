@@ -11,13 +11,13 @@ public class Player : MonoBehaviour
     public float shootPower = 40f;
     public static Player Instance { private set; get; }
 
-    private List<GameObject> _targetEnemyList;
     public float predictionFactor = 0.5f;
     public float heightOffset = 1.5f;
 
     public event EventHandler OnEnemiesDied;
     public event EventHandler StopMoving;
     public event EventHandler ShootStage;
+    
     private HealthSystem _healthSystem;
     private float _stopMovingDistance;
     private GameObject _currentArrow;
@@ -47,10 +47,7 @@ public class Player : MonoBehaviour
             _stopMovingDistance = 0;
         }
 
-        _targetEnemyList = new List<GameObject> { GameObject.FindGameObjectWithTag("Enemy")};
-        Debug.Log(_targetEnemyList);
         _healthSystem = GetComponent<HealthSystem>();
-        _healthSystem.OnDead += HealthSystemOnOnDead;
         Arrow.EnemyHit += ArrowOnEnemyHit;
     }
 
@@ -64,7 +61,7 @@ public class Player : MonoBehaviour
         switch (_state)
         {
             case State.Walking:
-                if (_targetEnemyList.Count < 0)
+                if (FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length == 0)
                 {
                     _stopMovingDistance = 24;
                     OnEnemiesDied?.Invoke(this, EventArgs.Empty);
@@ -80,8 +77,6 @@ public class Player : MonoBehaviour
             case State.Shooting:
                 if (!_isShooting)
                 {
-                    _targetEnemyList.Clear();
-                    _targetEnemyList = new List<GameObject> { GameObject.FindGameObjectWithTag("Enemy") };
                     StartShootingSequence();
                 }
 
@@ -102,8 +97,7 @@ public class Player : MonoBehaviour
 
     public void NockArrow()
     {
-        if (_currentArrow == null && _currentTargetIndex < _targetEnemyList.Count)
-        {
+        if (_currentArrow == null && _currentTargetIndex < FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length) {
             Quaternion arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(90, 0, 0);
             _currentArrow = Instantiate(arrowPrefab, arrowNockPoint.position, arrowRotation);
             _currentArrow.transform.SetParent(arrowNockPoint);
@@ -114,8 +108,8 @@ public class Player : MonoBehaviour
 
     public void ReleaseArrow()
     {
-        if (_currentArrow == null || _currentTargetIndex >= _targetEnemyList.Count) return;
-        GameObject targetEnemy = _targetEnemyList[_currentTargetIndex];
+        if (_currentArrow == null || _currentTargetIndex >= (FindObjectsByType<Enemy>(FindObjectsSortMode.None)).Length) return;
+        Enemy targetEnemy = FindObjectsByType<Enemy>(FindObjectsSortMode.None)[_currentTargetIndex];
         if (targetEnemy == null)
         {
             _state = State.Walking;
@@ -145,7 +139,7 @@ public class Player : MonoBehaviour
         Debug.Log("enemy.name = " + enemy.name);
         enemy.TakeDamage(50);
 
-        if (_currentTargetIndex < _targetEnemyList.Count - 1)
+        if (_currentTargetIndex < FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length - 1)
         {
             _currentTargetIndex++;
         }
@@ -153,18 +147,6 @@ public class Player : MonoBehaviour
         {
             ResetTargetingSystem();
             _state = State.EnemyTurn;
-        }
-    }
-
-    private void HealthSystemOnOnDead(object sender, EventArgs e)
-    {
-        if (true)
-        {
-            GameObject enemyToRemove = _targetEnemyList[_currentTargetIndex];
-            _targetEnemyList.Remove(enemyToRemove);
-            Destroy(enemyToRemove);
-
-            _currentTargetIndex = Mathf.Clamp(_currentTargetIndex, 0, _targetEnemyList.Count - 1);
         }
     }
 
@@ -180,6 +162,6 @@ public class Player : MonoBehaviour
 
     public bool HasValidTarget()
     {
-        return _currentTargetIndex < _targetEnemyList.Count;
+        return _currentTargetIndex < FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length;
     }
 }
