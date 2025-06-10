@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: soldier
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 579d6e52a97465cd8937a93fe2f5f88a, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -62,6 +66,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 579d6e52a97465cd8937a93fe2f5f88a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5929087794643223057}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 579d6e52a97465cd8937a93fe2f5f88a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6253661845566367519}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 579d6e52a97465cd8937a93fe2f5f88a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2909654383374915671}
   m_SourcePrefab: {fileID: 100100000, guid: 579d6e52a97465cd8937a93fe2f5f88a, type: 3}
 --- !u!1 &59889947027983217 stripped
 GameObject:
@@ -118,3 +128,28 @@ CapsuleCollider:
   m_Height: 1.6461991
   m_Direction: 1
   m_Center: {x: 0, y: 0.8394323, z: -0.12977779}
+--- !u!114 &6253661845566367519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59889947027983217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 330931a8c4b49c17faa9957e031c1689, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2909654383374915671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 59889947027983217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 879390326ae0b4f209340caa4cbe3f99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
