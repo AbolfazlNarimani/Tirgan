@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     public event EventHandler StopMoving;
     public event EventHandler ShootStage;
     
+    private List<Enemy> _targetEnemyList = new List<Enemy>();
     private HealthSystem _healthSystem;
     private float _stopMovingDistance;
     private GameObject _currentArrow;
@@ -26,9 +27,9 @@ public class Player : MonoBehaviour
 
     private enum State
     {
+        WaitingPlayerTurn,
         Walking,
         Shooting,
-        EnemyTurn
     }
 
     private State _state;
@@ -41,6 +42,7 @@ public class Player : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("player start");
         if (TryGetComponent(out MovePlayerToNextWave movePlayerToNextWave))
         {
             movePlayerToNextWave.InitialMove();
@@ -60,6 +62,16 @@ public class Player : MonoBehaviour
 
         switch (_state)
         {
+            case State.WaitingPlayerTurn:
+            {
+                if(TurnSystem.Instance.IsPlayerTurn())
+                {
+                    _state = State.Shooting;
+                    Debug.Log("State is changed form wating player turn to shooting");
+                }
+                
+                break;
+            }
             case State.Walking:
                 if (FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length == 0)
                 {
@@ -69,7 +81,9 @@ public class Player : MonoBehaviour
                 }
                 else if (!_isShooting)
                 {
+                    Debug.Log("state has changed from walking to shooting");
                     _state = State.Shooting;
+                  
                 }
 
                 break;
@@ -77,14 +91,10 @@ public class Player : MonoBehaviour
             case State.Shooting:
                 if (!_isShooting)
                 {
+                    TurnSystem.Instance.SetPlayerShooting(true);
                     StartShootingSequence();
                 }
-
-                break;
-
-            case State.EnemyTurn:
-                // Enemy turn logic here
-                _state = State.Walking;
+                Debug.Log("state is set to shooting");
                 break;
         }
     }
@@ -92,12 +102,21 @@ public class Player : MonoBehaviour
     private void StartShootingSequence()
     {
         _isShooting = true;
+        _targetEnemyList.Clear();
+        foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        {
+            if (enemy != null && !enemy.GetComponent<HealthSystem>().IsDead())
+            {
+                _targetEnemyList.Add(enemy);
+            }
+        }
         ShootStage?.Invoke(this, EventArgs.Empty);
     }
 
     public void NockArrow()
     {
-        if (_currentArrow == null && _currentTargetIndex < FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length) {
+        if (_currentArrow == null && _currentTargetIndex < _targetEnemyList.Count)
+        {
             Quaternion arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(90, 0, 0);
             _currentArrow = Instantiate(arrowPrefab, arrowNockPoint.position, arrowRotation);
             _currentArrow.transform.SetParent(arrowNockPoint);
@@ -108,21 +127,21 @@ public class Player : MonoBehaviour
 
     public void ReleaseArrow()
     {
-        if (_currentArrow == null || _currentTargetIndex >= (FindObjectsByType<Enemy>(FindObjectsSortMode.None)).Length) return;
-        Enemy targetEnemy = FindObjectsByType<Enemy>(FindObjectsSortMode.None)[_currentTargetIndex];
+        if (_currentArrow == null || _currentTargetIndex >= _targetEnemyList.Count) return;
+
+        Enemy targetEnemy = _targetEnemyList[_currentTargetIndex];
         if (targetEnemy == null)
         {
             _state = State.Walking;
             return;
         }
-        _currentArrow.transform.SetParent(null);
-       
-        Vector3 enemyVelocity = targetEnemy.GetComponent<Rigidbody>()?.linearVelocity ?? Vector3.zero;
-        Vector3 predictedPos = targetEnemy.transform.position +
-                               Vector3.up * heightOffset +
-                               enemyVelocity * predictionFactor;
 
-        _currentArrow.transform.DOMove(predictedPos, 1f).OnComplete(() =>
+        _currentArrow.transform.SetParent(null);
+
+        Vector3 enemyVelocity = targetEnemy.GetComponent<Rigidbody>()?.linearVelocity ?? Vector3.zero;
+        Vector3 predictedPos = targetEnemy.transform.position + Vector3.up * heightOffset + enemyVelocity * predictionFactor;
+
+        _currentArrow.transform.DOMove(predictedPos, 0.5f).OnComplete(() =>
         {
             if (!_currentArrow.TryGetComponent<Arrow>(out _))
             {
@@ -136,28 +155,27 @@ public class Player : MonoBehaviour
 
     private void ArrowOnEnemyHit(HealthSystem enemy)
     {
-        Debug.Log("enemy.name = " + enemy.name);
         enemy.TakeDamage(50);
 
-        if (_currentTargetIndex < FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length - 1)
+        if (_currentTargetIndex < _targetEnemyList.Count - 1)
         {
             _currentTargetIndex++;
         }
         else
         {
+            TurnSystem.Instance.SetPlayerShooting(false);
+            TurnSystem.Instance.NextTurn();
+            _state = State.WaitingPlayerTurn;
             ResetTargetingSystem();
-            _state = State.EnemyTurn;
         }
     }
+
 
     private void ResetTargetingSystem()
     {
         _currentTargetIndex = 0;
-        _healthSystem = null;
         _isShooting = false;
-
-
-        // targetEnemyList = GetNewEnemies();
+        _targetEnemyList.Clear();
     }
 
     public bool HasValidTarget()

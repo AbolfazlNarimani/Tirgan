@@ -8,6 +8,8 @@ public class HealthSystem : MonoBehaviour
     public event EventHandler OnDead;
     public event EventHandler OnDamaged;
 
+    private bool _isDead = false;
+
     public void TakeDamage(int damage)
     {
         health -= damage;
@@ -21,15 +23,26 @@ public class HealthSystem : MonoBehaviour
         {
             Die();
         }
+
+        if (health > 0)
+        {
+            _isDead = false;
+        }
     }
 
     private void Die()
     {
         OnDead?.Invoke(this, EventArgs.Empty);
+        _isDead = true;
     }
 
     public float GetHealthNormalized()
     {
         return health / HealthMax;
+    }
+
+    public bool IsDead()
+    {
+        return _isDead;
     }
 }
