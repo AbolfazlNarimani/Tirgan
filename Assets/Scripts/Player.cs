@@ -17,44 +17,52 @@ public class Player : MonoBehaviour
 
     
     private HealthSystem _healthSystem;
-    private UnitAnimation animator;
+    private UnitAnimation _animator;
+    private EnemySpawner _enemySpawner;
 
     public bool CanReleaseArrow { get; set; }
     public bool ShouldSpawnArrow { get; set; }
     public bool HasHitEnemy { get; set; }
-
     private void Awake()
     {
         Instance = this;
-        animator = GetComponent<UnitAnimation>();
+        _animator = GetComponent<UnitAnimation>();
     }
 
     private void Start()
     {
-        Debug.Log("player start");
-        if (TryGetComponent(out MovePlayerToNextWave movePlayerToNextWave))
-        {
-            movePlayerToNextWave.InitialMove();
-            animator.SetBool("IsWallking", true);
-            animator.SetBool("RangeAttack",true);
-        }
+        _animator.SetBool("RangeAttack",true);
 
         _healthSystem = GetComponent<HealthSystem>();
     }
     
     public IEnumerator StartShootingSequence()
     {
+        MovePlayerToNextWave movePlayerToNextWave = GetComponent<MovePlayerToNextWave>();
+        if (!movePlayerToNextWave.GetMoveInisialized())
+        {
+            yield return movePlayerToNextWave.InitialMove();
+        }
+
+        if (FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length == 0)
+        {
+           yield return movePlayerToNextWave.MoveToNextWave();
+           yield return _enemySpawner.SpawnNextWave();
+        }
+        
         foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
         {
-            animator.SetBool("IsWallking", false);
             var enemyHealth = enemy.GetComponent<HealthSystem>();
             if (enemy == null || enemyHealth.IsDead()) 
                 continue;
             
-            animator.SetTrigger("Shoot");
-
+            
+            _animator.SetBool("IsWallking",false);
+            _animator.SetTrigger("Shoot");
             ShouldSpawnArrow = false;
             yield return new WaitUntil(() => ShouldSpawnArrow);
+            
+            
                 
             var arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(90, 0, 0);
             var currentArrow = Instantiate(arrowPrefab, arrowNockPoint.position, arrowRotation);
@@ -69,12 +77,12 @@ public class Player : MonoBehaviour
 
             HasHitEnemy = false;
             yield return new WaitUntil(() => HasHitEnemy);
-                
             enemyHealth.TakeDamage(50);
-            
-            animator.SetTrigger("RangeAttackDone");
-            animator.SetBool("RangeAttack",false);
+            _animator.SetTrigger("RangeAttackDone");
+            _animator.SetBool("RangeAttack",false);
         }
+       
+      
     }
 
     public IEnumerator ReleaseArrow(Enemy targetEnemy, GameObject currentArrow)

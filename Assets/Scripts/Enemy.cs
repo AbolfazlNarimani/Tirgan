@@ -9,8 +9,7 @@ public class Enemy : MonoBehaviour
 {
 
     [FormerlySerializedAs("_player")] [SerializeField] private Player player;
-    [SerializeField] private float playerMoveSpeed;
-    [SerializeField] private int enemyDamage;
+    [FormerlySerializedAs("playerMoveSpeed")] [SerializeField] private float enemyMoveSpeed;
 
     private UnitAnimation animator;
 
@@ -50,7 +49,7 @@ public class Enemy : MonoBehaviour
     {
         if (transform.position.z + 2 != player.transform.position.z)
         {
-            transform.DOMoveZ(transform.position.z + playerMoveSpeed, 1f);
+            transform.DOMoveZ(transform.position.z + enemyMoveSpeed, 1f);
             return true;
         }
 
@@ -59,7 +58,7 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator AttackThePlayer()
     {
-       player.AttackPlayer(enemyDamage);
+      // player.AttackPlayer(enemyDamage);
         yield break;
     }
 
