@@ -55,13 +55,6 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0
-        functionName: NewEvent
-        data: 
-        objectReferenceParameter: {fileID: 266615822036995018, guid: 1b7e06ea179f8d662a24080e300c78ea, type: 3}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
       - time: 0.3629859
         functionName: OnReachArrow
         data: 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class TurnSystem : MonoBehaviour
@@ -9,21 +10,48 @@ public class TurnSystem : MonoBehaviour
     
     public event EventHandler OnTurnNumberChanged;
     
-    private bool _isPlayerTurn = true;
-    private bool _isPlayerShooting = true;
-    
     private void Awake()
     {
         Instance = this;
     }
-    
+
+    private void Start()
+    {
+        StartCoroutine(Turn());
+    }
+
     public void NextTurn()
     {
-        _isPlayerTurn = !_isPlayerTurn;
         OnTurnNumberChanged?.Invoke(this, EventArgs.Empty);
     }
-    
-    public bool IsPlayerTurn() => _isPlayerTurn;
-    public bool IsPlayerShooting() => _isPlayerShooting;
-    public void SetPlayerShooting(bool playerShooting) => _isPlayerShooting = playerShooting;
+
+    private IEnumerator Turn()
+    {
+        while (true)
+        {
+            yield return ExecutePlayerTurn();
+            yield return ExecuteEnemyTurn();
+            
+            // check if last room
+            if (true)
+                yield return WaitForUpgrade();
+            
+            yield return null;
+        }
+    }
+
+    private IEnumerator ExecutePlayerTurn()
+    {
+        yield return Player.Instance.StartShootingSequence();
+    }
+
+    private IEnumerator ExecuteEnemyTurn()
+    {
+        yield break;
+    }
+
+    private IEnumerator WaitForUpgrade()
+    {
+        yield break;
+    }
 }

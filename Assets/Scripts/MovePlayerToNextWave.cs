@@ -7,10 +7,15 @@ public class MovePlayerToNextWave : MonoBehaviour
     [SerializeField] private Vector3 zMoveAmount;
     [SerializeField] private Vector3 initialMoveValue;
     public event EventHandler Move;
+    private UnitAnimation animator;
+
+    private void Awake()
+    {
+        animator = GetComponent<UnitAnimation>();
+    }
 
     private void Start()
     {
-        Player.Instance.OnEnemiesDied += InstanceOnEnemiesDied;
         InitialMove();
     }
 
@@ -22,7 +27,7 @@ public class MovePlayerToNextWave : MonoBehaviour
 
     public void InitialMove()
     {
-        Move?.Invoke(this,EventArgs.Empty);
         transform.DOMoveZ(initialMoveValue.z, 2f);
+        animator.SetBool("IsWallking",false);
     }
 }

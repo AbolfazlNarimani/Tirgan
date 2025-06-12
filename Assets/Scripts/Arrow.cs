@@ -7,8 +7,6 @@ public class Arrow : MonoBehaviour
     private bool hasStuck = false;
     private Collider col;
 
-    public static event Action<HealthSystem> EnemyHit;
-
     void Start()
     {
         col = GetComponent<Collider>();
@@ -21,9 +19,8 @@ public class Arrow : MonoBehaviour
 
         if (other.CompareTag("Enemy")) 
         {
-            Debug.Log("Arrow Hit (Trigger)");
             StickArrow(other);
-            EnemyHit?.Invoke(other.GetComponent<HealthSystem>());
+            Player.Instance.HasHitEnemy = true;
         }
         else
         {

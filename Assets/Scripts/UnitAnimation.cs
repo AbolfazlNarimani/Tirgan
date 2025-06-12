@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class UnitAnimation : MonoBehaviour
 {
@@ -7,20 +8,7 @@ public class UnitAnimation : MonoBehaviour
 
     private void Start()
     {
-        if(TryGetComponent(out MovePlayerToNextWave movePlayerToNextWave));
-        {
-            movePlayerToNextWave.Move += MovePlayerToNextWaveOnmove;
-        }
-        if (IsTargetRanged())
-        {
-            _animator.SetBool("MeleeAttack",false);
-        }
-        else
-        {
-            _animator.SetBool("MeleeAttack", true);
-        }
-        Player.Instance.StopMoving += InstanceOnStopMoving;
-        Player.Instance.ShootStage += InstanceOnShootStage;
+        _animator.SetBool("MeleeAttack", !IsTargetRanged());
     }
 
     private void InstanceOnAllEnemiesDead(object sender, EventArgs e)
@@ -32,8 +20,12 @@ public class UnitAnimation : MonoBehaviour
 
     private void InstanceOnShootStage(object sender, EventArgs e)
     {
-        Debug.Log("Animation Shoot");
-        _animator.SetTrigger("Shoot");
+       
+    }
+
+    public void SetTrigger(string trigger)
+    {
+        _animator.SetTrigger(trigger);
     }
 
     private void InstanceOnStopMoving(object sender, EventArgs e)
@@ -49,16 +41,21 @@ public class UnitAnimation : MonoBehaviour
 
     public void OnReachArrow()
     {
-        Player.Instance.NockArrow(); // Prepare arrow visually
+        Player.Instance.ShouldSpawnArrow = true;
     }
         
     public void OnReleaseArrow()
     {
-        Player.Instance.ReleaseArrow(); // Actually fire the arrow
+        Player.Instance.CanReleaseArrow = true;
     }
 
     private bool IsTargetRanged()
     {
         return true;
+    }
+
+    public void SetBool(string boolName, bool value)
+    {
+        _animator.SetBool(boolName,value);
     }
 }

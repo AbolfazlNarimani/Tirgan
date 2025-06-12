@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
@@ -14,30 +15,18 @@ public class Player : MonoBehaviour
     public float predictionFactor = 0.5f;
     public float heightOffset = 1.5f;
 
-    public event EventHandler OnEnemiesDied;
-    public event EventHandler StopMoving;
-    public event EventHandler ShootStage;
     
-    private List<Enemy> _targetEnemyList = new List<Enemy>();
     private HealthSystem _healthSystem;
-    private float _stopMovingDistance;
-    private GameObject _currentArrow;
-    private int _currentTargetIndex = 0;
-    private bool _isShooting = false;
+    private UnitAnimation animator;
 
-    private enum State
-    {
-        WaitingPlayerTurn,
-        Walking,
-        Shooting,
-    }
-
-    private State _state;
+    public bool CanReleaseArrow { get; set; }
+    public bool ShouldSpawnArrow { get; set; }
+    public bool HasHitEnemy { get; set; }
 
     private void Awake()
     {
         Instance = this;
-        _state = State.Walking;
+        animator = GetComponent<UnitAnimation>();
     }
 
     private void Start()
@@ -46,140 +35,83 @@ public class Player : MonoBehaviour
         if (TryGetComponent(out MovePlayerToNextWave movePlayerToNextWave))
         {
             movePlayerToNextWave.InitialMove();
-            _stopMovingDistance = 0;
+            animator.SetBool("IsWallking", true);
+            animator.SetBool("RangeAttack",true);
         }
 
         _healthSystem = GetComponent<HealthSystem>();
-        Arrow.EnemyHit += ArrowOnEnemyHit;
     }
-
-    private void Update()
+    
+    public IEnumerator StartShootingSequence()
     {
-        if (transform.position.z == _stopMovingDistance)
-        {
-            StopMoving?.Invoke(this, EventArgs.Empty);
-        }
-
-        switch (_state)
-        {
-            case State.WaitingPlayerTurn:
-            {
-                if(TurnSystem.Instance.IsPlayerTurn())
-                {
-                    _state = State.Shooting;
-                    Debug.Log("State is changed form wating player turn to shooting");
-                }
-                
-                break;
-            }
-            case State.Walking:
-                if (FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length == 0)
-                {
-                    _stopMovingDistance = 24;
-                    OnEnemiesDied?.Invoke(this, EventArgs.Empty);
-                    ResetTargetingSystem();
-                }
-                else if (!_isShooting)
-                {
-                    Debug.Log("state has changed from walking to shooting");
-                    _state = State.Shooting;
-                  
-                }
-
-                break;
-
-            case State.Shooting:
-                if (!_isShooting)
-                {
-                    TurnSystem.Instance.SetPlayerShooting(true);
-                    StartShootingSequence();
-                }
-                Debug.Log("state is set to shooting");
-                break;
-        }
-    }
-
-    private void StartShootingSequence()
-    {
-        _isShooting = true;
-        _targetEnemyList.Clear();
         foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
         {
-            if (enemy != null && !enemy.GetComponent<HealthSystem>().IsDead())
-            {
-                _targetEnemyList.Add(enemy);
-            }
+            animator.SetBool("IsWallking", false);
+            var enemyHealth = enemy.GetComponent<HealthSystem>();
+            if (enemy == null || enemyHealth.IsDead()) 
+                continue;
+            
+            animator.SetTrigger("Shoot");
+
+            ShouldSpawnArrow = false;
+            yield return new WaitUntil(() => ShouldSpawnArrow);
+                
+            var arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(90, 0, 0);
+            var currentArrow = Instantiate(arrowPrefab, arrowNockPoint.position, arrowRotation);
+            currentArrow.transform.SetParent(arrowNockPoint);
+            currentArrow.transform.localPosition = Vector3.zero;
+            currentArrow.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
+            CanReleaseArrow = false;
+            yield return new WaitUntil(() => CanReleaseArrow);
+                
+            yield return ReleaseArrow(enemy, currentArrow);
+
+            HasHitEnemy = false;
+            yield return new WaitUntil(() => HasHitEnemy);
+                
+            enemyHealth.TakeDamage(50);
+            
+            animator.SetTrigger("RangeAttackDone");
+            animator.SetBool("RangeAttack",false);
         }
-        ShootStage?.Invoke(this, EventArgs.Empty);
     }
 
-    public void NockArrow()
+    public IEnumerator ReleaseArrow(Enemy targetEnemy, GameObject currentArrow)
     {
-        if (_currentArrow == null && _currentTargetIndex < _targetEnemyList.Count)
-        {
-            Quaternion arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(90, 0, 0);
-            _currentArrow = Instantiate(arrowPrefab, arrowNockPoint.position, arrowRotation);
-            _currentArrow.transform.SetParent(arrowNockPoint);
-            _currentArrow.transform.localPosition = Vector3.zero;
-            _currentArrow.transform.localRotation = Quaternion.Euler(0, 0, 0);
-        }
-    }
-
-    public void ReleaseArrow()
-    {
-        if (_currentArrow == null || _currentTargetIndex >= _targetEnemyList.Count) return;
-
-        Enemy targetEnemy = _targetEnemyList[_currentTargetIndex];
-        if (targetEnemy == null)
-        {
-            _state = State.Walking;
-            return;
-        }
-
-        _currentArrow.transform.SetParent(null);
+        currentArrow.transform.SetParent(null);
 
         Vector3 enemyVelocity = targetEnemy.GetComponent<Rigidbody>()?.linearVelocity ?? Vector3.zero;
         Vector3 predictedPos = targetEnemy.transform.position + Vector3.up * heightOffset + enemyVelocity * predictionFactor;
 
-        _currentArrow.transform.DOMove(predictedPos, 0.5f).OnComplete(() =>
+        currentArrow.transform.DOMove(predictedPos, 0.5f).OnComplete(() =>
         {
-            if (!_currentArrow.TryGetComponent<Arrow>(out _))
+            if (!currentArrow.TryGetComponent<Arrow>(out _))
             {
-                _currentArrow.AddComponent<Arrow>();
+                currentArrow.AddComponent<Arrow>();
             }
         });
 
-        _currentArrow = null;
-        _isShooting = false;
+        currentArrow = null;
+        yield break;
     }
 
-    private void ArrowOnEnemyHit(HealthSystem enemy)
+    public void AttackPlayer(int damage)
     {
-        enemy.TakeDamage(50);
-
-        if (_currentTargetIndex < _targetEnemyList.Count - 1)
-        {
-            _currentTargetIndex++;
-        }
-        else
-        {
-            TurnSystem.Instance.SetPlayerShooting(false);
-            TurnSystem.Instance.NextTurn();
-            _state = State.WaitingPlayerTurn;
-            ResetTargetingSystem();
-        }
+        _healthSystem.TakeDamage(damage);
     }
 
-
-    private void ResetTargetingSystem()
+    /*private IEnumerator Felan()
     {
-        _currentTargetIndex = 0;
-        _isShooting = false;
-        _targetEnemyList.Clear();
+        Debug.Log("A");
+        yield return Another();
+        Debug.Log("C");
     }
 
-    public bool HasValidTarget()
+    private IEnumerator Another()
     {
-        return _currentTargetIndex < FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length;
-    }
+        Debug.Log("VAR");
+        yield return new WaitForSeconds(10);
+        Debug.Log("B");
+    }*/
 }
