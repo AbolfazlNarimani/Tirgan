@@ -31,11 +31,10 @@ public class Enemy : MonoBehaviour
             if (enemy == null || enemy.GetComponent<HealthSystem>().IsDead()) continue;
             animator.SetBool("IsWallking",false);
             animator.SetBool("MeleeAttack",true);
-            if (TryGettingToThePlayer())
+            if (ShouldMoveForward())
             {
-                animator.SetBool("IsWallking",true);
-                enemy.transform.DOMove(player.transform.position, 3f);
-                
+               // animator.SetBool("IsWallking",true);
+               // enemy.transform.DOMoveZ(transform.position.z + enemyMoveSpeed, 1f);
             }
             else
             {
@@ -43,23 +42,23 @@ public class Enemy : MonoBehaviour
                yield return AttackThePlayer();
             }
         }
-    }
-
-    private bool TryGettingToThePlayer()
-    {
-        if (transform.position.z + 2 != player.transform.position.z)
-        {
-            transform.DOMoveZ(transform.position.z + enemyMoveSpeed, 1f);
-            return true;
-        }
-
-        return false;
+        yield return new WaitForSeconds(1f);
     }
 
     private IEnumerator AttackThePlayer()
     {
       // player.AttackPlayer(enemyDamage);
-        yield break;
+        yield return new WaitForSeconds(2f);
+    }
+
+    private bool ShouldMoveForward()
+    {
+        if (transform.position.z + 2 != player.transform.position.z)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void OnOnDead(object sender, EventArgs e)

@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 4943266084897717524, guid: e74f83d571de1049f8cb446e1f37526c, type: 3}
+  enemyMoveSpeed: 1
 --- !u!114 &2909654383374915671
 MonoBehaviour:
   m_ObjectHideFlags: 0

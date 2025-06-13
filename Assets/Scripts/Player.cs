@@ -64,12 +64,11 @@ public class Player : MonoBehaviour
             
             
                 
-            var arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(90, 0, 0);
+            var arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(0, 0, 0);
             var currentArrow = Instantiate(arrowPrefab, arrowNockPoint.position, arrowRotation);
             currentArrow.transform.SetParent(arrowNockPoint);
             currentArrow.transform.localPosition = Vector3.zero;
-            currentArrow.transform.localRotation = Quaternion.Euler(0, 0, 0);
-
+            
             CanReleaseArrow = false;
             yield return new WaitUntil(() => CanReleaseArrow);
                 
@@ -81,8 +80,18 @@ public class Player : MonoBehaviour
             _animator.SetTrigger("RangeAttackDone");
             _animator.SetBool("RangeAttack",false);
         }
-       
-      
+
+        yield return StartEnemyAction();
+
+
+    }
+
+    private IEnumerator StartEnemyAction()
+    {
+        foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
+        {
+            yield return enemy.ProcessEnemyActions();
+        }
     }
 
     public IEnumerator ReleaseArrow(Enemy targetEnemy, GameObject currentArrow)
