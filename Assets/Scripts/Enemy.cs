@@ -29,8 +29,6 @@ public class Enemy : MonoBehaviour
         foreach (Enemy enemy in enemyList)
         {
             if (enemy == null || enemy.GetComponent<HealthSystem>().IsDead()) continue;
-            animator.SetBool("IsWallking",false);
-            animator.SetBool("MeleeAttack",true);
             if (ShouldMoveForward())
             {
                // animator.SetBool("IsWallking",true);

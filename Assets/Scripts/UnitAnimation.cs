@@ -1,14 +1,15 @@
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 public class UnitAnimation : MonoBehaviour
 {
-    [SerializeField] private Animator _animator;
+    [FormerlySerializedAs("_animator")] [SerializeField] private Animator animator;
     
     public void SetTrigger(string trigger)
     {
-        _animator.SetTrigger(trigger);
+        animator.SetTrigger(trigger);
     }
     
     public void OnReachArrow()
@@ -24,6 +25,6 @@ public class UnitAnimation : MonoBehaviour
 
     public void SetBool(string boolName, bool value)
     {
-        _animator.SetBool(boolName,value);
+        animator.SetBool(boolName,value);
     }
 }

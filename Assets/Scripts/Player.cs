@@ -56,14 +56,11 @@ public class Player : MonoBehaviour
             if (enemy == null || enemyHealth.IsDead()) 
                 continue;
             
-            
             _animator.SetBool("IsWallking",false);
             _animator.SetTrigger("Shoot");
             ShouldSpawnArrow = false;
             yield return new WaitUntil(() => ShouldSpawnArrow);
             
-            
-                
             var arrowRotation = arrowNockPoint.rotation * Quaternion.Euler(0, 0, 0);
             var currentArrow = Instantiate(arrowPrefab, arrowNockPoint.position, arrowRotation);
             currentArrow.transform.SetParent(arrowNockPoint);
@@ -80,8 +77,9 @@ public class Player : MonoBehaviour
             _animator.SetTrigger("RangeAttackDone");
             _animator.SetBool("RangeAttack",false);
         }
+        
 
-        yield return StartEnemyAction();
+       // yield return StartEnemyAction();
 
 
     }
@@ -96,19 +94,13 @@ public class Player : MonoBehaviour
 
     public IEnumerator ReleaseArrow(Enemy targetEnemy, GameObject currentArrow)
     {
+        Debug.Log("arrow go ");
         currentArrow.transform.SetParent(null);
 
         Vector3 enemyVelocity = targetEnemy.GetComponent<Rigidbody>()?.linearVelocity ?? Vector3.zero;
         Vector3 predictedPos = targetEnemy.transform.position + Vector3.up * heightOffset + enemyVelocity * predictionFactor;
 
-        currentArrow.transform.DOMove(predictedPos, 0.5f).OnComplete(() =>
-        {
-            if (!currentArrow.TryGetComponent<Arrow>(out _))
-            {
-                currentArrow.AddComponent<Arrow>();
-            }
-        });
-
+        currentArrow.transform.DOMove(predictedPos, 0.5f);
         currentArrow = null;
         yield break;
     }
