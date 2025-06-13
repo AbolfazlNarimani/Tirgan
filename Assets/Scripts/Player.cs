@@ -27,13 +27,14 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         _animator = GetComponent<UnitAnimation>();
+        _healthSystem = GetComponent<HealthSystem>();
     }
 
     private void Start()
     {
         _animator.SetBool("RangeAttack",true);
 
-        _healthSystem = GetComponent<HealthSystem>();
+       
     }
     
     public IEnumerator StartShootingSequence()
@@ -73,22 +74,18 @@ public class Player : MonoBehaviour
 
             HasHitEnemy = false;
             yield return new WaitUntil(() => HasHitEnemy);
-            enemyHealth.TakeDamage(50);
-            _animator.SetTrigger("RangeAttackDone");
+            enemyHealth.TakeDamage(10);
+           // _animator.SetTrigger("RangeAttackDone");
             _animator.SetBool("RangeAttack",false);
         }
-        
-
-       // yield return StartEnemyAction();
-
-
+        yield return StartEnemyAction();
     }
 
     private IEnumerator StartEnemyAction()
     {
         foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
         {
-            yield return enemy.ProcessEnemyActions();
+            yield return enemy.ProcessEnemyActions(enemy);
         }
     }
 

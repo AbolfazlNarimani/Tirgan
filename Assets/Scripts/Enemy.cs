@@ -7,9 +7,14 @@ using UnityEngine.Serialization;
 
 public class Enemy : MonoBehaviour
 {
+    [FormerlySerializedAs("_player")] [SerializeField]
+    private Player player;
 
-    [FormerlySerializedAs("_player")] [SerializeField] private Player player;
-    [FormerlySerializedAs("playerMoveSpeed")] [SerializeField] private float enemyMoveSpeed;
+    [FormerlySerializedAs("playerMoveSpeed")] [SerializeField]
+    private int attackRage;
+
+    [FormerlySerializedAs("attackRange")] [SerializeField]
+    private float enemyMoveSpeed;
 
     private UnitAnimation animator;
 
@@ -18,40 +23,39 @@ public class Enemy : MonoBehaviour
         animator = GetComponent<UnitAnimation>();
     }
 
-    private void Start() 
+    private void Start()
     {
         GetComponent<HealthSystem>().OnDead += OnOnDead;
     }
-    
-    public IEnumerator ProcessEnemyActions()
+
+    public IEnumerator ProcessEnemyActions(Enemy enemy)
     {
-        Enemy[] enemyList = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-        foreach (Enemy enemy in enemyList)
+        if (enemy == null || enemy.GetComponent<HealthSystem>().IsDead()) yield break;
+
+        if (ShouldMoveForward())
         {
-            if (enemy == null || enemy.GetComponent<HealthSystem>().IsDead()) continue;
-            if (ShouldMoveForward())
-            {
-               // animator.SetBool("IsWallking",true);
-               // enemy.transform.DOMoveZ(transform.position.z + enemyMoveSpeed, 1f);
-            }
-            else
-            {
-               animator.SetTrigger("Slash");
-               yield return AttackThePlayer();
-            }
+            animator.SetTrigger("NormalEnemy");
+            animator.SetBool("IsWallking", true);
+            enemy.transform.DOMoveZ(transform.position.z - enemyMoveSpeed, 1f);
         }
+        else
+        {
+            animator.SetTrigger("Slash");
+            yield return AttackThePlayer();
+        }
+
         yield return new WaitForSeconds(1f);
     }
 
     private IEnumerator AttackThePlayer()
     {
-      // player.AttackPlayer(enemyDamage);
-        yield return new WaitForSeconds(2f);
+        player.AttackPlayer(10);
+        yield return new WaitForSeconds(.5f);
     }
 
     private bool ShouldMoveForward()
     {
-        if (transform.position.z + 2 != player.transform.position.z)
+        if (Vector3.Distance(transform.position, player.transform.position) <= attackRage)
         {
             return true;
         }
@@ -63,5 +67,4 @@ public class Enemy : MonoBehaviour
     {
         Destroy(gameObject);
     }
-    
 }
