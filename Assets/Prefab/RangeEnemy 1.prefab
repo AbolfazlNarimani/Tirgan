@@ -69,7 +69,18 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: aa7277519c8589f269cb6f22c42f9cf0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 511777224201105331}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: aa7277519c8589f269cb6f22c42f9cf0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -984230408807075185}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: aa7277519c8589f269cb6f22c42f9cf0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1065033929051829549}
   m_SourcePrefab: {fileID: 100100000, guid: aa7277519c8589f269cb6f22c42f9cf0, type: 3}
+--- !u!95 &2246330766658504549 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: aa7277519c8589f269cb6f22c42f9cf0, type: 3}
+  m_PrefabInstance: {fileID: 5640200289428880116}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4793920820940081061 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: aa7277519c8589f269cb6f22c42f9cf0, type: 3}
@@ -140,3 +151,29 @@ CapsuleCollider:
   m_Height: 2.1081474
   m_Direction: 1
   m_Center: {x: 0, y: 1.1055499, z: 0}
+--- !u!114 &-984230408807075185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4793920820940081061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 879390326ae0b4f209340caa4cbe3f99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+--- !u!114 &1065033929051829549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4793920820940081061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e9eaa7b8fb5462d8b89691c2365ed85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 2246330766658504549}

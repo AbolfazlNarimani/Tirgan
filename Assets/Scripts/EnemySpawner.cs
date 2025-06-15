@@ -65,7 +65,7 @@ public class EnemySpawner : MonoBehaviour
         if (_waveNumber == 1)
         {
             var platform = platforms[_waveNumber];
-            foreach (var enemy in waveOnePrefab)
+            foreach (var enemy in waveTowPrefab)
             {
                 Vector3 spawnPosition = new Vector3(
                     _spawnXPosition,
@@ -85,7 +85,7 @@ public class EnemySpawner : MonoBehaviour
         if (_waveNumber == 2)
         {
             var platform = platforms[_waveNumber];
-            foreach (var enemy in waveOnePrefab)
+            foreach (var enemy in waveThreePrefab)
             {
                 Vector3 spawnPosition = new Vector3(
                     _spawnXPosition,
