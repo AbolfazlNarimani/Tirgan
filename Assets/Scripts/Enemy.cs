@@ -2,12 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class Enemy : MonoBehaviour
 {
-    [FormerlySerializedAs("_player")] [SerializeField]
     private Player player;
 
     [FormerlySerializedAs("playerMoveSpeed")] [SerializeField]
@@ -16,11 +16,15 @@ public class Enemy : MonoBehaviour
     [FormerlySerializedAs("attackRange")] [SerializeField]
     private float enemyMoveSpeed;
 
+    [SerializeField] private int enemyDamage;
+    
     private UnitAnimation animator;
+
 
     private void Awake()
     {
         animator = GetComponent<UnitAnimation>();
+        player = Player.Instance;
     }
 
     private void Start()
@@ -40,7 +44,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            animator.SetTrigger("Slash");
+            animator.SetTrigger("Attack");
             yield return AttackThePlayer();
         }
 
@@ -49,7 +53,7 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator AttackThePlayer()
     {
-        player.AttackPlayer(10);
+        player.AttackPlayer(enemyDamage);
         yield return new WaitForSeconds(.5f);
     }
 

@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour
 {
     [Header("Arrow Settings")] public GameObject arrowPrefab;
     public Transform arrowNockPoint;
-    public float shootPower = 40f;
+    [FormerlySerializedAs("damage")] public int playerDamage = 40;
     public static Player Instance { private set; get; }
 
     public float predictionFactor = 0.5f;
@@ -33,8 +34,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         _animator.SetBool("RangeAttack",true);
-
-       
+        
     }
     
     public IEnumerator StartShootingSequence()
@@ -48,7 +48,6 @@ public class Player : MonoBehaviour
         if (FindObjectsByType<Enemy>(FindObjectsSortMode.None).Length == 0)
         {
            yield return movePlayerToNextWave.MoveToNextWave();
-           yield return _enemySpawner.SpawnNextWave();
         }
         
         foreach (Enemy enemy in FindObjectsByType<Enemy>(FindObjectsSortMode.None))
@@ -74,7 +73,7 @@ public class Player : MonoBehaviour
 
             HasHitEnemy = false;
             yield return new WaitUntil(() => HasHitEnemy);
-            enemyHealth.TakeDamage(10);
+            enemyHealth.TakeDamage(playerDamage);
            // _animator.SetTrigger("RangeAttackDone");
             _animator.SetBool("RangeAttack",false);
         }

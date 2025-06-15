@@ -106,8 +106,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 330931a8c4b49c17faa9957e031c1689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 4943266084897717524, guid: e74f83d571de1049f8cb446e1f37526c, type: 3}
+  attackRage: 0
   enemyMoveSpeed: 2
+  enemyDamage: 10
 --- !u!114 &6932490816566410594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,7 +158,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0

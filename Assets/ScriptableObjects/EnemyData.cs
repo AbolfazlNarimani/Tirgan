@@ -10,5 +10,6 @@ namespace ScriptableObjects
         public float damage;
         public float moveSpeed;
         public bool isRange;
+        public string type;
     }
 }

@@ -26,7 +26,7 @@ public class MovePlayerToNextWave : MonoBehaviour
     {
         animator.SetBool("IsWallking",true);
         transform.DOMoveZ(zMoveAmount.z, 5f);
-        yield return new WaitForSeconds(10f);
+        yield return EnemySpawner.Instance.SpawnNextWave();
     }
 
     public IEnumerator InitialMove()
@@ -34,7 +34,7 @@ public class MovePlayerToNextWave : MonoBehaviour
         animator.SetBool("IsWallking",true);
         transform.DOMoveZ(initialMoveValue.z, 2f);
         MoveInisialized = true;
-        yield return new WaitForSeconds(2f);
+        yield return EnemySpawner.Instance.SpawnNextWave();
     }
 
     public bool GetMoveInisialized() => MoveInisialized;
